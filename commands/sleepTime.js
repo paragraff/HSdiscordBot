@@ -4,7 +4,7 @@ class WrongFormatError extends Error {}
 
 module.exports = {
   name: 'bedtime',
-  description: 'Set preferable bed time',
+  description: 'Set preferable bed time. Example: $bedtime 22:45 - 5 or $bedtime 10:45pm - 5am',
   execute(message, args) {
     const argsString = args.join(' ')
 
