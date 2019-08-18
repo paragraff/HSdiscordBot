@@ -1,22 +1,17 @@
-const yargs = require('yargs');
 const fs = require('fs');
 const Discord = require('discord.js');
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
+const config = require('./config.json');
 
-const args = yargs.option('token', {
-  alias: 't',
-  describe: 'your bot\'s token'
-})
-.demandOption(['token'], 'Please provide token to connect')
-.help()
-.argv;
+if (!Reflect.has(config, 'token')) {
+  console.log('Please provide the bot\'s token in the "config.json" to connect to the Discord');
+  return;
+}
 
-main(args.token);
+main(config);
 
-const prefix = '$';
-
-async function main(token) {
+async function main(config) {
 
   const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
@@ -28,9 +23,9 @@ async function main(token) {
 
   // subscribe to all messages all discord server which allow this bot
   client.on('message', message => {
-    if (!message.content.startsWith(prefix) || message.author.bot) return;
+    if (!message.content.startsWith(config.prefix) || message.author.bot) return;
 
-    const args = message.content.slice(prefix.length).split('/ +/');
+    const args = message.content.slice(config.prefix.length).split(/\s+/);
     const command = args.shift().toLowerCase();
 
     if (!client.commands.has(command)) return;
@@ -45,7 +40,7 @@ async function main(token) {
 
   // connect the bot to the discord
   try {
-    await client.login(token);
+    await client.login(config.token);
   } catch (e) {
     console.log('Something went wrong. Discord login filed with error: ' + e.message)
   }
